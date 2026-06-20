@@ -50,6 +50,23 @@ app.post("/bugs", (req,res)=>{
   res.status(201).json(newBug);
 });
 
+app.put("/bugs/:id", (req, res) => {
+  const bugId = parseInt(req.params.id);
+
+  const bug = bugs.find((b) => b.id === bugId);
+
+  if (!bug) {
+    return res.status(404).json({
+      message: "Bug not found"
+    });
+  }
+
+  bug.title = req.body.title || bug.title;
+  bug.status = req.body.status || bug.status;
+
+  res.json(bug);
+});
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
