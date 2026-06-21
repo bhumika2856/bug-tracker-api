@@ -4,26 +4,29 @@ const app = express();
 
 app.use(express.json());
 
-const bugs= [
-  {
-    id:1,
-    title:"Login pgase crashes",
-    status:"Open"
-  },
-  {
-    id:2,
-    title: "Profile image not loading",
-    status:"In Progress"
-  }
-];
+{
+  id: 1,
+  title: "Login page crashes",
+  status: "Open"
+}
 
 app.get("/", (req, res) => {
   res.send("Bug Tracker API Running");
 });
 
-app.get("/bugs", (req,res) =>{
+app.get("/bugs", (req, res) => {
+  const { status } = req.query;
+
+  if (status) {
+    const filteredBugs = bugs.filter(
+      (bug) => bug.status.toLowerCase() === status.toLowerCase()
+    );
+
+    return res.json(filteredBugs);
+  }
+
   res.json(bugs);
-})
+});
 
 app.get("/bugs/:id", (req, res) => {
   const bugId = parseInt(req.params.id);
@@ -40,11 +43,13 @@ app.get("/bugs/:id", (req, res) => {
 });
 
 app.post("/bugs", (req,res)=>{
-  const newBug={
-    id:bugs.length+1,
-    title:req.body.title,
-    status:"Open"
-  };
+  const newBug = {
+  id: bugs.length + 1,
+  title: req.body.title,
+  status: "Open",
+  priority: req.body.priority || "Medium",
+  createdAt: new Date()
+};
 
   bugs.push(newBug);
   res.status(201).json(newBug);
