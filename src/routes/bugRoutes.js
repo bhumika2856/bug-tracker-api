@@ -1,4 +1,6 @@
 const express=require("express");
+const {createBugValidator}=require("../validators/bugValidator");
+const validate=require("../middleware/validate");
 
 const {
     getAllBugs,
@@ -11,7 +13,7 @@ const router=express.Router();
 
 router.get("/", getAllBugs);
 router.get("/:id", getBugById);
-router.post("/",createBug);
+router.post("/",createBugValidator,validate,createBug);
 router.put("/:id", updateBug);
 
 module.exports=router;
