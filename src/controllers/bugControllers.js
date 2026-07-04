@@ -1,74 +1,90 @@
-const bugs = [
-    {
-        id: 1,
-        title: "Login page crashes",
-        status: "Open",
-        priority: "High",
-        createdAt: new Date()
-    },
-    {
-        id: 2,
-        title: "Profile image not loading",
-        status: "In Progress",
-        priority: "Medium",
-        createdAt: new Date()
+const Bug=require("../models/Bug");
+
+
+
+
+const getAllBugs=async (req,res)=>{
+    try{
+
+        const {status}=req.query;
+    
+        let query={};
+    
+        if(status){
+            query.status=status;
+        }
+        const bugs= await Bug.find(query);
+    
+        res.json(bugs);
+    } catch (error){
+        res.status(500).json({
+            message: error.message
+        });
     }
-];
+};
 
-const getAllBugs=(req,res)=>{
-    const {status}=req.query;
+const getBugById= async (req,res)=>{
+    try{
 
-    if(status){
-        const filteredBugs=bugs.filter(
-            (bug)=>
-                bug.status.toLowerCase()===status.toLowerCase()
+        const bugId=parseInt(req.params.id);
+        if(!bug){
+            return res.status(404).json({
+                message:"Bug not found :("
+            });
+        }
+        res.json(bug);
+    } catch(error){
+        res.status(500).json({
+            message: error.message
+        });
+    }
+
+};
+
+const createBug= async (req,res)=>{
+    try{
+
+        const bug = await Bug.create({
+            
+            title: req.body.title,
+            description: req.body.description,
+            priority: req.body.priority || "Medium",
+        });
+        res.status(201).json(bug);
+    } catch(error){
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+const updateBug= async (req,res)=>{
+    try{
+        const bug=await Bug.findByIdAndUpdate(
+            req.params.id,
+            {
+                title:req.body.title,
+                description:req.body.description,
+                status: req.body.status,
+                priority: req.body.priority
+            },
+            {
+                new:true,
+                runValidators: true
+            }
         );
-        return res.json(filteredBugs);
-    }
-    res.json(bugs);
-};
 
-const getBugById=(req,res)=>{
-    const bugId=parseInt(req.params.id);
-
-    const bug=bugs.find((b)=> b.id===bugId);
-
-    if(!bug){
-        return res.status(404).json({
-            message:"Bug not found :("
+        if(!bug){
+            return res.status(404).json({
+                message:"Bug not found :("
+            });
+        }
+        res.json(bug);
+    } catch(error){
+        res.status(500).json({
+            message: error.message
         });
     }
-    res.json(bug);
-};
-
-const createBug=(req,res)=>{
-    const newBug={
-        id: bugs.length+1,
-        title: req.body.title,
-        status: "Open",
-        priority: req.body.priority || "Medium",
-        createdAt: new Date()
-    };
-    bugs.push(newBug);
-
-    res.status(201).json(newBug);
-};
-
-const updateBug=(req,res)=>{
-    const bugId=parseInt(req.params.id);
-
-    const bug=bugs.find((b)=> b.id===bugId);
-
-    if(!bug){
-        return res.status(404).json({
-            message:"Bug not found :("
-        });
-    }
-    bug.title=req.body.title || bug.title;
-    bug.status=req.body.status || bug.status;
-    bug.priority=req.body.priority || bug.priority;
-
-    res.json(bug);
 };
 
 module.exports={
