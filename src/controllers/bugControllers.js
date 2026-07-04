@@ -1,11 +1,9 @@
 const Bug=require("../models/Bug");
+const asyncHandler=require("../middleware/asyncHandler");
 
 
 
-
-const getAllBugs=async (req,res)=>{
-    try{
-
+const getAllBugs=asyncHandler(async (req,res)=>{
         const {status}=req.query;
     
         let query={};
@@ -16,33 +14,22 @@ const getAllBugs=async (req,res)=>{
         const bugs= await Bug.find(query);
     
         res.json(bugs);
-    } catch (error){
-        res.status(500).json({
-            message: error.message
-        });
-    }
-};
+     
+});
+    
 
-const getBugById= async (req,res)=>{
-    try{
 
-        const bugId=parseInt(req.params.id);
+const getBugById= asyncHandler( async (req,res)=>{
+        const bug = await Bug.findById(req.params.id);
         if(!bug){
-            return res.status(404).json({
-                message:"Bug not found :("
-            });
+            res.status(404);
+            throw new Error("Bug not found");
         }
         res.json(bug);
-    } catch(error){
-        res.status(500).json({
-            message: error.message
-        });
-    }
 
-};
+});
 
-const createBug= async (req,res)=>{
-    try{
+const createBug= asyncHandler( async (req,res)=>{
 
         const bug = await Bug.create({
             
@@ -51,15 +38,10 @@ const createBug= async (req,res)=>{
             priority: req.body.priority || "Medium",
         });
         res.status(201).json(bug);
-    } catch(error){
-        res.status(500).json({
-            message: error.message
-        });
-    }
-};
+});
 
-const updateBug= async (req,res)=>{
-    try{
+const updateBug= asyncHandler(async (req,res)=>{
+    
         const bug=await Bug.findByIdAndUpdate(
             req.params.id,
             {
@@ -80,12 +62,7 @@ const updateBug= async (req,res)=>{
             });
         }
         res.json(bug);
-    } catch(error){
-        res.status(500).json({
-            message: error.message
-        });
-    }
-};
+});
 
 module.exports={
     getAllBugs,
