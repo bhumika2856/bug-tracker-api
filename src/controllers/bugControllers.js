@@ -6,7 +6,9 @@ const asyncHandler=require("../middleware/asyncHandler");
 const getAllBugs=asyncHandler(async (req,res)=>{
         const {status}=req.query;
     
-        let query={};
+        let query={
+            createdBy:req.user._id
+        };
     
         if(status){
             query.status=status;
