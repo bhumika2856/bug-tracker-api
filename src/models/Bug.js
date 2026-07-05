@@ -20,6 +20,11 @@ const bugSchema= new mongoose.Schema(
             type:String,
             enum:["Low", "Medium", "High", "Critical"],
             default:"Medium"
+        },
+        createdBy:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref:"User",
+            required:true
         }
     },
     {

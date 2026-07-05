@@ -36,6 +36,7 @@ const createBug= asyncHandler( async (req,res)=>{
             title: req.body.title,
             description: req.body.description,
             priority: req.body.priority || "Medium",
+            createdBy:req.user._id
         });
         res.status(201).json(bug);
 });
