@@ -22,7 +22,10 @@ const getAllBugs=asyncHandler(async (req,res)=>{
 
 
 const getBugById= asyncHandler( async (req,res)=>{
-        const bug = await Bug.findById(req.params.id);
+        const bug = await Bug.findOne({
+            _id:req.params.id,
+            createdBy: req.user._id
+        })
         if(!bug){
             res.status(404);
             throw new Error("Bug not found");
@@ -45,8 +48,11 @@ const createBug= asyncHandler( async (req,res)=>{
 
 const updateBug= asyncHandler(async (req,res)=>{
     
-        const bug=await Bug.findByIdAndUpdate(
-            req.params.id,
+        const bug=await Bug.findOneAndUpdate(
+            {
+                _id:req.params.id,
+                createdBy: req.user._id
+            },
             {
                 title:req.body.title,
                 description:req.body.description,

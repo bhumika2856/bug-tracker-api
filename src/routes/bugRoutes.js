@@ -14,9 +14,9 @@ const {
 const router=express.Router();
 
 router.get("/", protect, getAllBugs);
-router.get("/:id", getBugById);
+router.get("/:id", protect, getBugById);
 router.post("/",protect,createBugValidator,validate,createBug);
-router.put("/:id", updateBug);
+router.put("/:id", protect, updateBug);
 router.delete("/:id", protect, deleteBug);
 
 module.exports=router;
