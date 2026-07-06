@@ -67,9 +67,27 @@ const updateBug= asyncHandler(async (req,res)=>{
         res.json(bug);
 });
 
+const deleteBug= asyncHandler( async(req,res)=>{
+    const bug=await Bug.findOne({
+        _id: req.params.id,
+        createdBy: req.user._id
+    });
+    if(!bug){
+        res.status(404);
+        throw new Error("Bug not found");
+    }
+
+    await bug.deleteOne();
+
+    res.json({
+        message:"Bug deleted successfully"
+    });
+});
+
 module.exports={
     getAllBugs,
     getBugById,
     createBug,
-    updateBug
+    updateBug,
+    deleteBug
 };

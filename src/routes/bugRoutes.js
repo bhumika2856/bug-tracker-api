@@ -7,7 +7,8 @@ const {
     getAllBugs,
     getBugById,
     createBug,
-    updateBug
+    updateBug,
+    deleteBug
 }= require("../controllers/bugControllers");
 
 const router=express.Router();
@@ -16,5 +17,6 @@ router.get("/", protect, getAllBugs);
 router.get("/:id", getBugById);
 router.post("/",protect,createBugValidator,validate,createBug);
 router.put("/:id", updateBug);
+router.delete("/:id", protect, deleteBug);
 
 module.exports=router;
