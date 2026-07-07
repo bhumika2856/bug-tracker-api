@@ -4,7 +4,7 @@ const asyncHandler=require("../middleware/asyncHandler");
 
 
 const getAllBugs=asyncHandler(async (req,res)=>{
-        const {status,priority,search}=req.query;
+        const {status,priority,search, sort}=req.query;
 
         const page=Number(req.query.page) || 1;
         const limit=Number(req.query.limit)|| 5;
@@ -30,6 +30,7 @@ const getAllBugs=asyncHandler(async (req,res)=>{
             };
         }
         const bugs= await Bug.find(query)
+            .sort(sort || "-createdAt")
             .skip(skip)
             .limit(limit);
     
