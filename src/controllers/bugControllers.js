@@ -4,7 +4,7 @@ const asyncHandler=require("../middleware/asyncHandler");
 
 
 const getAllBugs=asyncHandler(async (req,res)=>{
-        const {status,search}=req.query;
+        const {status,priority,search}=req.query;
     
         let query={
             createdBy:req.user._id
@@ -12,6 +12,11 @@ const getAllBugs=asyncHandler(async (req,res)=>{
     
         if(status){
             query.status=status;
+        }
+        if(priority){
+            query.priority=
+                priority.charAt(0).toUpperCase() +
+                priority.slice(1).toLowerCase();
         }
 
         if(search){
