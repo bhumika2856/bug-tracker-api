@@ -4,7 +4,7 @@ const asyncHandler=require("../middleware/asyncHandler");
 
 
 const getAllBugs=asyncHandler(async (req,res)=>{
-        const {status}=req.query;
+        const {status,search}=req.query;
     
         let query={
             createdBy:req.user._id
@@ -12,6 +12,13 @@ const getAllBugs=asyncHandler(async (req,res)=>{
     
         if(status){
             query.status=status;
+        }
+
+        if(search){
+            query.title={
+                $regex: search,
+                $options:"i"
+            };
         }
         const bugs= await Bug.find(query);
     
