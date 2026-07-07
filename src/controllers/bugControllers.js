@@ -5,6 +5,10 @@ const asyncHandler=require("../middleware/asyncHandler");
 
 const getAllBugs=asyncHandler(async (req,res)=>{
         const {status,priority,search}=req.query;
+
+        const page=Number(req.query.page) || 1;
+        const limit=Number(req.query.limit)|| 5;
+        const skip=(page-1)*limit;
     
         let query={
             createdBy:req.user._id
@@ -25,7 +29,9 @@ const getAllBugs=asyncHandler(async (req,res)=>{
                 $options:"i"
             };
         }
-        const bugs= await Bug.find(query);
+        const bugs= await Bug.find(query)
+            .skip(skip)
+            .limit(limit);
     
         res.json(bugs);
      
