@@ -61,7 +61,7 @@ const createBug= asyncHandler( async (req,res)=>{
         const bug = await Bug.create({
             title: req.body.title,
             description: req.body.description,
-            priority: req.body.priority || "Medium",
+            priority: req.body.priority ,
             
             createdBy:req.user._id
         });

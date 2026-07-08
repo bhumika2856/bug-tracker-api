@@ -16,6 +16,8 @@ const predictPriority= async (description)=>{
                             High
                             Critical
                             Do not explain your answer.
+                            Do not add punctuation.
+                            Do not add any other text.
                             
                             Bug Description:
                             ${description}`
@@ -26,8 +28,25 @@ const predictPriority= async (description)=>{
         }
 
     );
-    return response.data.candidates[0].content.parts[0].text.trim();
+    let priority= response.data.candidates[0].content.parts[0].text.trim();
     
+    priority=priority
+        .replace(".","")
+        .replace("Priority:", "")
+        .trim();
+
+    const validPriorities=[
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+    ];
+    const matched=validPriorities.find(
+        (p)=> p.toLowerCase()===priority.toLowerCase()
+    );
+
+    
+    return matched || "Medium";
 };
 
 module.exports={
