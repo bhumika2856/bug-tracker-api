@@ -1,7 +1,9 @@
 const Bug=require("../models/Bug");
 const asyncHandler=require("../middleware/asyncHandler");
 
-
+const {
+    generateSummary
+} = require("../services/ai/aiService");
 
 const getAllBugs=asyncHandler(async (req,res)=>{
         const {status,priority,search, sort}=req.query;
@@ -54,12 +56,12 @@ const getBugById= asyncHandler( async (req,res)=>{
 });
 
 const createBug= asyncHandler( async (req,res)=>{
-
+        
         const bug = await Bug.create({
-            
             title: req.body.title,
             description: req.body.description,
             priority: req.body.priority || "Medium",
+            
             createdBy:req.user._id
         });
         res.status(201).json(bug);
@@ -109,10 +111,30 @@ const deleteBug= asyncHandler( async(req,res)=>{
     });
 });
 
+const generateBugSummary= asyncHandler(async(req,res)=>{
+    const bug= await Bug.findOne({
+        _id: req.params.id,
+        createdBy: req.user._id
+    });
+
+    if(!bug){
+        res.status(404);
+        throw new error("Bug not found");
+    }
+
+    const summary=await generateSummary(bug.description);
+
+    bug.summary= summary;
+
+    await bug.save();
+    res.json(bug);
+})
+
 module.exports={
     getAllBugs,
     getBugById,
     createBug,
     updateBug,
-    deleteBug
+    deleteBug,
+    generateBugSummary
 };
