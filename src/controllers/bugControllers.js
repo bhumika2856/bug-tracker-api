@@ -2,7 +2,8 @@ const Bug=require("../models/Bug");
 const asyncHandler=require("../middleware/asyncHandler");
 
 const {
-    generateSummary
+    generateSummary,
+    predictPriority
 } = require("../services/ai/aiService");
 
 const getAllBugs=asyncHandler(async (req,res)=>{
@@ -128,7 +129,26 @@ const generateBugSummary= asyncHandler(async(req,res)=>{
 
     await bug.save();
     res.json(bug);
-})
+});
+
+const suggestPriority= asyncHandler( async(req,res)=>{
+    const bug=await Bug.findOne({
+        _id: req.params.id,
+        createdBy: req.user._id
+    });
+
+    if(!bug){
+        res.status(404);
+        throw new Error("Bug not found");
+    }
+
+    const priority= await predictPriority(bug.description);
+
+    bug.priority=priority;
+    await bug.save();
+
+    res.json(bug);
+});
 
 module.exports={
     getAllBugs,
@@ -136,5 +156,6 @@ module.exports={
     createBug,
     updateBug,
     deleteBug,
-    generateBugSummary
+    generateBugSummary,
+    suggestPriority
 };
