@@ -24,6 +24,9 @@ const bugSchema= new mongoose.Schema(
         summary:{
             type: String
         },
+        suggestedFix:{
+            type:String
+        },
         
         createdBy:{
             type: mongoose.Schema.Types.ObjectId,

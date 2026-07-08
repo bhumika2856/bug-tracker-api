@@ -3,7 +3,8 @@ const asyncHandler=require("../middleware/asyncHandler");
 
 const {
     generateSummary,
-    predictPriority
+    predictPriority,
+    suggestFix
 } = require("../services/ai/aiService");
 
 const getAllBugs=asyncHandler(async (req,res)=>{
@@ -150,6 +151,24 @@ const suggestPriority= asyncHandler( async(req,res)=>{
     res.json(bug);
 });
 
+const suggestBugFix= asyncHandler(async(req,res)=>{
+    const bug= await Bug.findOne({
+        _id: req.params.id,
+        createdBy: req.user._id
+    });
+    if(!bug){
+        res.status(404);
+        throw new Error("Bug not found");
+    }
+
+    const fix=await suggestFix(bug.description);
+
+    bug.suggestedFix=fix;
+    await bug.save();
+
+    res.json(bug);
+});
+
 module.exports={
     getAllBugs,
     getBugById,
@@ -157,5 +176,6 @@ module.exports={
     updateBug,
     deleteBug,
     generateBugSummary,
-    suggestPriority
+    suggestPriority,
+    suggestBugFix
 };

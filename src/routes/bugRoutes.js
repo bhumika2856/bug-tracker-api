@@ -11,7 +11,8 @@ const {
     updateBug,
     deleteBug,
     generateBugSummary,
-    suggestPriority
+    suggestPriority,
+    suggestBugFix
 }= require("../controllers/bugControllers");
 
 const router=express.Router();
@@ -30,5 +31,11 @@ router.post(
     "/:id/suggest-priority",
     protect,
     suggestPriority
+);
+
+router.post(
+    "/:id/suggest-fix",
+    protect,
+    suggestBugFix
 );
 module.exports=router;
