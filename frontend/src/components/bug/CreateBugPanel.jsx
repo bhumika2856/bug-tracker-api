@@ -1,46 +1,67 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { createBug } from "../../api/bugApi";
+import { createBug, updateBug  } from "../../api/bugApi";
 
 
-export default function CreateBugPanel({ open, onClose, onBugCreated}) {
+export default function CreateBugPanel({ open, onClose, onBugCreated,editingBug}) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("");
     const [loading, setLoading] = useState(false);
+    useEffect(() => {
+  if (editingBug) {
+    setTitle(editingBug.title);
+    setDescription(editingBug.description);
+    setPriority(editingBug.priority || "");
+  } else {
+    setTitle("");
+    setDescription("");
+    setPriority("");
+  }
+}, [editingBug, open]);
 
-      const handleCreateBug = async () => {
-    if (!title.trim() || !description.trim()) {
-      alert("Title and Description are required.");
-      return;
-    }
+    const handleCreateBug = async () => {
+  if (!title.trim() || !description.trim()) {
+    alert("Title and Description are required.");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
+    if (editingBug) {
+      await updateBug(editingBug._id, {
+        title,
+        description,
+        priority,
+      });
+    } else {
       await createBug({
         title,
         description,
         priority: priority || undefined,
       });
-      setTitle("");
-      setDescription("");
-      setPriority("");
-
-      setLoading(false);
-
-      onClose();
-      onBugCreated();
-  
-      
-
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-      alert("Failed to create bug.");
     }
-  };
+
+    setTitle("");
+    setDescription("");
+    setPriority("");
+
+    onClose();
+    onBugCreated();
+
+  } catch (error) {
+    console.error(error);
+    alert(
+      editingBug
+        ? "Failed to update bug."
+        : "Failed to create bug."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
     return (
     <AnimatePresence>
       {open && (
@@ -71,7 +92,7 @@ export default function CreateBugPanel({ open, onClose, onBugCreated}) {
               {/* Header */}
               <div className="flex items-center justify-between border-b border-white/10 p-6">
                 <h2 className="text-2xl font-semibold">
-                  Create New Bug
+                  {editingBug ? "Edit Bug" : "Create New Bug"}
                 </h2>
 
                 <button
@@ -172,7 +193,13 @@ onChange={(e) => setPriority(e.target.value)} >
         disabled={loading}
       className="rounded-xl bg-indigo-500 px-6 py-3 font-medium transition hover:bg-indigo-400"
     >
-       {loading ? "Creating..." : "Create Bug"}
+       {loading
+  ? editingBug
+    ? "Saving..."
+    : "Creating..."
+  : editingBug
+    ? "Save Changes"
+    : "Create Bug"}
     </button>
 
   </div>

@@ -7,6 +7,8 @@ import { getAllBugs } from "../../api/bugApi";
 
 export default function Dashboard() {
   const [openPanel, setOpenPanel] = useState(false);
+  const [editingBug, setEditingBug] = useState(null);
+  const [selectedBugId, setSelectedBugId] = useState(null);
 
   const [bugs, setBugs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,8 +31,11 @@ export default function Dashboard() {
   return (
     <section className="space-y-6">
       <ActionBar
-        onCreate={() => setOpenPanel(true)}
-      />
+  onCreate={() => {
+    setEditingBug(null);
+    setOpenPanel(true);
+  }}
+/>
 
       {loading ? (
         <div className="text-center text-slate-400 py-20">
@@ -44,18 +49,26 @@ export default function Dashboard() {
         <div className="space-y-4">
           {bugs.map((bug) => (
             <BugCard
-              key={bug._id}
-              title={bug.title}
-              description={bug.description}
-              priority={bug.priority}
-              createdAt={new Date(bug.createdAt).toLocaleDateString()}
-            />
+  bug={bug}
+  isOpen={selectedBugId === bug._id}
+  onToggle={() =>
+    setSelectedBugId(
+      selectedBugId === bug._id ? null : bug._id
+    )
+  }
+  onEdit={() => {
+    setEditingBug(bug);
+    setOpenPanel(true);
+  }}
+  onDelete={fetchBugs}
+/>
           ))}
         </div>
       )}
 
       <CreateBugPanel
         open={openPanel}
+        editingBug={editingBug}
         onClose={() => setOpenPanel(false)}
         onBugCreated={fetchBugs}
       />

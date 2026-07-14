@@ -34,3 +34,4 @@ export const suggestFix = async (id) => {
   const response = await api.post(`/bugs/${id}/suggest-fix`);
   return response.data;
 };
+
