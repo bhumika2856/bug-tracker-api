@@ -1,11 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import ActionBar from "../../components/bug/ActionBar";
 import BugCard from "../../components/bug/BugCard";
 import CreateBugPanel from "../../components/bug/CreateBugPanel";
+import { getAllBugs } from "../../api/bugApi";
 
 export default function Dashboard() {
   const [openPanel, setOpenPanel] = useState(false);
+
+  const [bugs, setBugs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBugs();
+  }, []);
+
+  const fetchBugs = async () => {
+    try {
+      const data = await getAllBugs();
+      setBugs(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="space-y-6">
@@ -13,25 +32,32 @@ export default function Dashboard() {
         onCreate={() => setOpenPanel(true)}
       />
 
-      <div className="space-y-4">
-        <BugCard
-          title="Login page crashes"
-          description="Users are unable to login after entering valid credentials. The application throws an unexpected server error."
-          priority="Critical"
-          createdAt="9 Jul 2026"
-        />
-
-        <BugCard
-          title="Navbar alignment issue"
-          description="The profile icon shifts on smaller screen sizes causing layout inconsistency."
-          priority="Medium"
-          createdAt="8 Jul 2026"
-        />
-      </div>
+      {loading ? (
+        <div className="text-center text-slate-400 py-20">
+          Loading bugs...
+        </div>
+      ) : bugs.length === 0 ? (
+        <div className="text-center text-slate-400 py-20">
+          No bugs found.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {bugs.map((bug) => (
+            <BugCard
+              key={bug._id}
+              title={bug.title}
+              description={bug.description}
+              priority={bug.priority}
+              createdAt={new Date(bug.createdAt).toLocaleDateString()}
+            />
+          ))}
+        </div>
+      )}
 
       <CreateBugPanel
         open={openPanel}
         onClose={() => setOpenPanel(false)}
+        onBugCreated={fetchBugs}
       />
     </section>
   );

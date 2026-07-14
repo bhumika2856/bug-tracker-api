@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { createBug } from "../../api/bugApi";
 
 
-export default function CreateBugPanel({ open, onClose }) {
+export default function CreateBugPanel({ open, onClose, onBugCreated}) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("");
@@ -24,13 +24,16 @@ export default function CreateBugPanel({ open, onClose }) {
         description,
         priority: priority || undefined,
       });
+      setTitle("");
+      setDescription("");
+      setPriority("");
 
       setLoading(false);
 
       onClose();
-
-      // We'll replace this with our custom animated toast later.
-      alert("Bug created successfully!");
+      onBugCreated();
+  
+      
 
     } catch (error) {
       console.error(error);
