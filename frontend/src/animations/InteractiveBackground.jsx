@@ -1,38 +1,72 @@
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export default function InteractiveBackground() {
-  const mouseX = useMotionValue(window.innerWidth / 2);
-  const mouseY = useMotionValue(window.innerHeight / 2);
-
-  const smoothX = useSpring(mouseX, {
-    stiffness: 120,
-    damping: 25,
+  const [mouse, setMouse] = useState({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
   });
 
-  const smoothY = useSpring(mouseY, {
-    stiffness: 120,
-    damping: 25,
-  });
+  useEffect(() => {
+    const move = (e) => {
+      setMouse({
+        x: e.clientX,
+        y: e.clientY,
+      });
+    };
 
-  function handleMove(e) {
-    mouseX.set(e.clientX);
-    mouseY.set(e.clientY);
-  }
+    window.addEventListener("mousemove", move);
+
+    return () => window.removeEventListener("mousemove", move);
+  }, []);
 
   return (
-    <div
-      onMouseMove={handleMove}
-      className="fixed inset-0 -z-10 overflow-hidden bg-[#0B0F19]"
-    >
+    <div className="fixed inset-0 -z-10 overflow-hidden bg-[#0B0F19]">
+
+      {/* Base Gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#1f2a44_0%,#0B0F19_70%)]" />
+
+      {/* Mouse Spotlight */}
       <motion.div
-        style={{
-          x: smoothX,
-          y: smoothY,
+        animate={{
+          left: mouse.x,
+          top: mouse.y,
         }}
-        className="absolute h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        transition={{
+          type: "spring",
+          stiffness: 60,
+          damping: 18,
+        }}
+        className="absolute h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full"
       >
-        <div className="h-full w-full rounded-full bg-amber-400/10 blur-[120px]" />
+        <div className="h-full w-full rounded-full bg-cyan-400/15 blur-[170px]" />
       </motion.div>
+
+      {/* Secondary Glow */}
+      <motion.div
+        animate={{
+          left: mouse.x * 0.8,
+          top: mouse.y * 0.8,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 40,
+          damping: 22,
+        }}
+        className="absolute h-[900px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+      >
+        <div className="h-full w-full rounded-full bg-violet-500/10 blur-[220px]" />
+      </motion.div>
+
+      {/* Noise Overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, white 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
+      />
     </div>
   );
 }
