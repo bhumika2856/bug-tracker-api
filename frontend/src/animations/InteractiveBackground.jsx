@@ -22,7 +22,6 @@ export default function InteractiveBackground() {
 
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden bg-[#0B0F19]">
-
       {/* Base Gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#1f2a44_0%,#0B0F19_70%)]" />
 
