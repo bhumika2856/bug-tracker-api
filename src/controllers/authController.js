@@ -59,12 +59,20 @@ const loginUser=asyncHandler(async(req,res)=>{
         user:{
             id:user._id,
             name: user.name,
-            email:user.email
+            email:user.email,
+            role: user.role
         }
     });
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({}, "name email role");
+
+    res.json(users);
+});
+
 module.exports={
     registerUser,
-    loginUser
+    loginUser,
+    getAllUsers
 };

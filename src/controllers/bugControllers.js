@@ -96,6 +96,25 @@ const updateBug= asyncHandler(async (req,res)=>{
         res.json(bug);
 });
 
+const assignBug = asyncHandler(async (req, res) => {
+    const { assignedTo, dueDate } = req.body;
+
+    const bug = await Bug.findById(req.params.id);
+
+    if (!bug) {
+        res.status(404);
+        throw new Error("Bug not found");
+    }
+
+    bug.assignedTo = assignedTo;
+    bug.assignedAt = new Date();
+    bug.dueDate = dueDate;
+
+    await bug.save();
+
+    res.json(bug);
+});
+
 const deleteBug= asyncHandler( async(req,res)=>{
     const bug=await Bug.findOne({
         _id: req.params.id,
@@ -174,6 +193,7 @@ module.exports={
     getBugById,
     createBug,
     updateBug,
+    assignBug,
     deleteBug,
     generateBugSummary,
     suggestPriority,

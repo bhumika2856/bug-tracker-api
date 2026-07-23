@@ -12,25 +12,34 @@ export default function Dashboard() {
 
   const [bugs, setBugs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
-    fetchBugs();
-  }, []);
+  fetchBugs();
+}, [search, status]);
 
   const fetchBugs = async () => {
-    try {
-      const data = await getAllBugs();
-      setBugs(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const data = await getAllBugs({
+      search, status,
+    });
+
+    setBugs(data);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <section className="space-y-6">
       <ActionBar
+  search={search}
+  setSearch={setSearch}
+  status={status}
+  setStatus={setStatus}
   onCreate={() => {
     setEditingBug(null);
     setOpenPanel(true);

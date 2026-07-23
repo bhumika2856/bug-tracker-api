@@ -1,8 +1,13 @@
 const express=require("express");
 const {
     registerUser,
-    loginUser
+    loginUser,
+    getAllUsers
 } =require("../controllers/authController");
+
+const { 
+    protect,
+    adminOnly} = require("../middleware/authMiddleware");
 
 const {
     registerValidator,
@@ -10,6 +15,7 @@ const {
 } = require("../validators/authValidator");
 
 const validate = require("../middleware/validate");
+
 
 const router=express.Router();
 
@@ -24,5 +30,10 @@ router.post(
     loginValidator,
     validate,
     loginUser);
+
+router.get("/users",
+    protect,
+    adminOnly,
+    getAllUsers);
 
 module.exports=router;

@@ -32,6 +32,15 @@ const bugSchema= new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref:"User",
             required:true
+        },
+
+        assignedTo:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null
+        },
+        dueDate: {
+            type: Date
         }
     },
     {

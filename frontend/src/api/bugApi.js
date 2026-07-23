@@ -5,8 +5,11 @@ export const createBug = async (bugData) => {
   return response.data;
 };
 
-export const getAllBugs = async () => {
-  const response = await api.get("/bugs");
+export const getAllBugs = async (params = {}) => {
+  const response = await api.get("/bugs", {
+    params,
+  });
+
   return response.data;
 };
 
